@@ -1,0 +1,17 @@
+--- Environment Detection Log ---
+
+--- Detection Results ---
+[❌ FAILED] docker: jsh: command not found: docker
+
+[❌ FAILED] dockerCompose: jsh: command not found: docker
+
+[✅ SUCCESS] node: v20.19.1
+[✅ SUCCESS] npm: 10.8.2
+[❌ FAILED] openSSL: jsh: command not found: openssl
+
+[❌ FAILED] prismaNetwork: Network error: socket hang up
+-------------------------
+
+Conclusion: Environment does not support full-mode. Falling back to preview-mode.
+
+Using preview database — Prisma/Postgres not available in this environment.
