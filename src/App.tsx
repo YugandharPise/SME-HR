@@ -1,50 +1,58 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './lib/AuthContext';
-import LoginPage from './pages/LoginPage';
-import DashboardLayout from './components/DashboardLayout';
-import DashboardPage from './pages/DashboardPage';
-import EmployeesPage from './pages/EmployeesPage';
-import AttendancePage from './pages/AttendancePage';
-import PayrollPage from './pages/PayrollPage';
-import { Toaster } from '@/components/ui/sonner';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import LoginPage from './pages/Login';
+import SignUpPage from './pages/SignUp';
+import Dashboard from './pages/Dashboard';
+import Employees from './pages/Employees';
+import Attendance from './pages/Attendance';
+import Payroll from './pages/Payroll';
+import Layout from './components/shared/Layout';
+import { Toaster } from "@/components/ui/toaster"
 
-function AppRoutes() {
-  const { user } = useAuth();
-
-  return (
-    <Routes>
-      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
-      <Route 
-        path="/*" 
-        element={
-          user ? (
-            <DashboardLayout>
-              <Routes>
-                <Route path="/" element={<DashboardPage />} />
-                <Route path="/employees" element={<EmployeesPage />} />
-                <Route path="/attendance" element={<AttendancePage />} />
-                <Route path="/payroll" element={<PayrollPage />} />
-                <Route path="*" element={<Navigate to="/" />} />
-              </Routes>
-            </DashboardLayout>
-          ) : (
-            <Navigate to="/login" />
-          )
-        } 
-      />
-    </Routes>
-  );
-}
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
-      <Toaster />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Router>
+          <Main />
+        </Router>
+        <Toaster />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
+
+const Main = () => {
+  const { session, loading } = useAuth();
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+
+  return (
+    <Routes>
+      <Route path="/login" element={!session ? <LoginPage /> : <Navigate to="/" />} />
+      <Route path="/signup" element={!session ? <SignUpPage /> : <Navigate to="/" />} />
+      <Route path="/*" element={session ? <ProtectedRoutes /> : <Navigate to="/login" />} />
+    </Routes>
+  );
+};
+
+const ProtectedRoutes = () => {
+  return (
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/employees" element={<Employees />} />
+        <Route path="/attendance" element={<Attendance />} />
+        <Route path="/payroll" element={<Payroll />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Layout>
+  );
+};
 
 export default App;

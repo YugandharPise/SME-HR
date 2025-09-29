@@ -1,100 +1,60 @@
-# SME HR Prototype
+# SME-HR Web Application
 
-This project is a prototype for a Small to Medium Enterprise (SME) Human Resources management system. It includes core features like Employee CRUD, Attendance tracking, and Payroll processing.
+This is a functional web application prototype for SME-HR with a backend (API) and frontend (UI), connected to Supabase as the database.
 
-The system is designed to run in two modes:
-1.  **Preview Mode:** A lightweight version that runs entirely within the browser-based WebContainer environment. It uses a JSON file as a database and requires no external services like Docker or Postgres. This is the default mode for the live preview.
-2.  **Full Mode:** A production-ready setup using Docker, Postgres, and Prisma. This mode is intended for local development on a machine with these services available.
+## Core Features
 
----
+*   **Employee Management**: CRUD operations for employees.
+*   **Attendance**: Employees can check-in/out, HR can edit with reasons.
+*   **Payroll**: Define salary structures, run payroll, generate payslips.
+*   **Authentication + RBAC**: Three roles (Admin, HR, Employee) with access control.
 
-## Preview Mode Instructions (for Bolt Live Preview)
+## Tech Stack
 
-The live preview runs exclusively in **Preview Mode**.
+*   **Frontend**: React, Vite, TailwindCSS, shadcn/ui
+*   **Backend**: Node.js, Express, TypeScript
+*   **Database**: Supabase (Postgres)
 
-### How it Works
-
--   **Backend:** A Node.js/Express server serves the API.
--   **Database:** A simple `preview-db.json` file acts as the database. It is seeded with initial data on the first run.
--   **Authentication:** JWT-based authentication is used.
-
-### Seeded Credentials
-
-The preview database is seeded with the following user accounts. You can use these to log in and test the application:
-
--   **Admin Role**
-    -   **Email:** `admin@example.com`
-    -   **Password:** `password123`
--   **HR Role**
-    -   **Email:** `hr@example.com`
-    -   **Password:** `password123`
--   **Employee Role**
-    -   **Email:** `employee@example.com`
-    -   **Password:** `password123`
-
-### Running Preview Mode
-
-The application should start automatically in the Bolt preview window. The command `npm run dev` is used, which starts both the frontend and backend servers concurrently.
-
----
-
-## Full Mode Instructions (for Local Development)
-
-This mode requires Docker and Node.js to be installed on your local machine.
+## Running Locally
 
 ### Prerequisites
 
--   Docker
--   Node.js (v18+)
--   A `.env` file with database connection details.
+*   Node.js (v18 or higher)
+*   npm
+*   A Supabase account and project
 
 ### Setup
 
-1.  **Install dependencies:**
+1.  **Clone the repository**
+    ```bash
+    git clone <repository-url>
+    cd sme-hr-app
+    ```
+
+2.  **Install dependencies**
     ```bash
     npm install
     ```
-2.  **Setup Environment Variables:**
-    Create a `.env` file in the root directory with your `DATABASE_URL`.
+
+3.  **Set up environment variables**
+    Create a `.env` file in the root of the project and add your Supabase project URL and Anon key:
     ```
-    DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public"
+    VITE_SUPABASE_URL=your_supabase_project_url
+    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
     ```
-3.  **Start Services:**
-    ```bash
-    docker-compose up -d
-    ```
-4.  **Run Prisma Migrations:**
-    ```bash
-    npx prisma migrate dev
-    ```
-5.  **Seed the Database:**
-    ```bash
-    npx prisma db seed
-    ```
-6.  **Start the Application:**
+
+4.  **Run the database migrations**
+    Navigate to your Supabase project's SQL Editor and run the SQL commands from the files in the `supabase/migrations` directory in sequential order.
+
+5.  **Seed initial users**
+    You can sign up these users through the application's UI or directly in your Supabase dashboard:
+    *   `admin@example.com` / `Passw0rd!` (Set role to `admin` in the `profiles` table)
+    *   `hr@example.com` / `Passw0rd!` (Set role to `hr` in the `profiles` table)
+    *   `alice@example.com` / `Passw0rd!` (The default role is `employee`)
+
+6.  **Start the application**
+    This command will start both the frontend and backend servers concurrently.
     ```bash
     npm run dev
     ```
-
----
-
-## Project Structure
-
-```
-/
-├── server/                 # Backend Express server
-│   ├── api/                # API route handlers
-│   ├── middleware/         # Auth and RBAC middleware
-│   ├── db.ts               # Preview mode database logic
-│   └── index.ts            # Server entry point
-├── src/                    # Frontend React app
-│   ├── components/         # UI components
-│   ├── pages/              # Route components/pages
-│   ├── lib/                # Helper functions, auth context
-│   └── App.tsx             # Main app component with routing
-├── detect-env.js           # Environment detection script
-├── run-tests.js            # Acceptance test script
-├── build-detect.log        # Log file for environment checks
-├── ACCEPTANCE.md           # Log file for acceptance test results
-└── BUILDMETA.md            # Explanation of which mode is used
-```
+    The frontend will be available at `http://localhost:5173` and the backend at `http://localhost:3000`.
